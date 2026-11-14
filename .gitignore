@@ -1,0 +1,21 @@
+/target/
+*.class
+/.idea/
+/.vscode/
+/.settings/
+*.iml
+.classpath
+.project
+.env
+.env.*
+!.env.example
+/gladys.env
+/logs/
+*.log
+hs_err_pid*
+*.hprof
+.DS_Store
+Thumbs.db
+
+# Local Python deployment-test caches
+__pycache__/

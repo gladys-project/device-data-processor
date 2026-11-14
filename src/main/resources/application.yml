@@ -1,0 +1,69 @@
+server:
+  port: 8081
+spring:
+  application:
+    name: device-data-processor
+  main:
+    web-application-type: reactive
+  kafka:
+    bootstrap-servers: localhost:9092
+    admin:
+      auto-create: false
+    consumer:
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.ByteArrayDeserializer
+      enable-auto-commit: false
+      auto-offset-reset: earliest
+  cloud:
+    function:
+      definition: ''
+    stream:
+      function:
+        autodetect: false
+      bindings:
+        processDeviceData-in-0:
+          destination: ${RAW_TELEMETRY_TOPIC:gladys.telemetry.raw.v1}
+          group: ${DEVICE_PROCESSOR_GROUP:gladys.device-data-processor.v1}
+          content-type: application/json
+          consumer:
+            auto-startup: false
+            use-native-decoding: false
+        processDeviceData-out-0:
+          destination: ${DEVICE_DATA_TOPIC:gladys.device.data.v1}
+          content-type: application/json
+          producer:
+            auto-startup: false
+            use-native-encoding: true
+      kafka:
+        binder:
+          brokers: ${spring.kafka.bootstrap-servers}
+          auto-create-topics: false
+          auto-add-partitions: false
+        bindings:
+          processDeviceData-out-0:
+            producer:
+              message-key-expression: headers['kafka_messageKey']
+              configuration:
+                key.serializer: org.apache.kafka.common.serialization.StringSerializer
+                value.serializer: org.apache.kafka.common.serialization.StringSerializer
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+---
+spring:
+  config:
+    activate:
+      on-profile: deployed
+  cloud:
+    function:
+      definition: processDeviceData
+    stream:
+      bindings:
+        processDeviceData-in-0:
+          consumer:
+            auto-startup: true
+        processDeviceData-out-0:
+          producer:
+            auto-startup: true

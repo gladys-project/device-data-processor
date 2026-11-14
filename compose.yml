@@ -1,0 +1,26 @@
+name: device-data-processor
+
+services:
+  device-data-processor:
+    image: ${DEVICE_PROCESSOR_IMAGE:-device-data-processor:local}
+    build:
+      context: .
+    environment:
+      SPRING_PROFILES_ACTIVE: deployed
+      SERVER_PORT: "8080"
+      SPRING_KAFKA_BOOTSTRAPSERVERS: ${SPRING_KAFKA_BOOTSTRAPSERVERS:-kafka:29092}
+      SPRING_KAFKA_SECURITY_PROTOCOL:
+      SPRING_KAFKA_PROPERTIES_SASL_MECHANISM:
+      SPRING_KAFKA_PROPERTIES_SASL_JAAS_CONFIG:
+      RAW_TELEMETRY_TOPIC: ${RAW_TELEMETRY_TOPIC:-gladys.telemetry.raw.v1}
+      DEVICE_DATA_TOPIC: ${DEVICE_DATA_TOPIC:-gladys.device.data.v1}
+      DEVICE_PROCESSOR_GROUP: ${DEVICE_PROCESSOR_GROUP:-gladys.device-data-processor.v1}
+    ports:
+      - "127.0.0.1:${DEVICE_PROCESSOR_HTTP_PORT:-8081}:8080"
+    networks: [gladys]
+    restart: unless-stopped
+
+networks:
+  gladys:
+    external: true
+    name: ${GLADYS_NETWORK:-gladys}
