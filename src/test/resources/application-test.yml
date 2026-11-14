@@ -1,0 +1,19 @@
+spring:
+  main:
+    web-application-type: reactive
+  kafka:
+    bootstrap-servers: 127.0.0.1:1
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.ByteArraySerializer
+    admin:
+      auto-create: false
+  cloud:
+    stream:
+      function:
+        autodetect: false
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
