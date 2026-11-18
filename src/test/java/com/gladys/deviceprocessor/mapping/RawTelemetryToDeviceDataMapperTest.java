@@ -38,7 +38,7 @@ class RawTelemetryToDeviceDataMapperTest {
         assertThat(actual.getSequence()).isEqualTo(source.getSequence());
         assertThat(actual.getBatteryLevelPct()).isEqualTo(10);
         assertThat(actual.getErrors().getFirst().getCode()).isEqualTo("LOW_BATTERY");
-        assertThat(source.getPayload().getSensorId()).isEqualTo("soil-001");
+        assertThat(source.getPayload().getSensorId()).isEqualTo(java.util.UUID.fromString("e62e100e-4e97-42e0-8dd8-46519f0114c9"));
     }
 
     @Test void copiesDiagnosticCollectionsAndElementsRatherThanSharingMutableState() throws Exception {
@@ -66,7 +66,7 @@ class RawTelemetryToDeviceDataMapperTest {
     @Test void projectsDifferentSensorsWithoutInterpretingTheirMeasurements() throws Exception {
         var source = input();
         source.setEventType("SOIL_TEMPERATURE_READING");
-        source.getPayload().setSensorId("temperature-002");
+        source.getPayload().setSensorId(java.util.UUID.fromString("5556111b-70f6-4185-aa89-f66503bc7423"));
         source.getPayload().putAdditionalProperty("value", 18.5);
         var actual = mapper.toDeviceData(source);
         assertThat(actual.getEventType()).isEqualTo("SOIL_TEMPERATURE_READING");

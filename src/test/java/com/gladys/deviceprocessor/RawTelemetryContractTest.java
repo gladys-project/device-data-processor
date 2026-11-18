@@ -80,8 +80,24 @@ class RawTelemetryContractTest {
     @Test void acceptsDifferentSensorsWithoutRequiringSoilOrPlantIds() throws Exception {
         var value = example();
         value.put("eventType", "SOIL_TEMPERATURE_READING");
-        value.putObject("payload").put("sensorId", "temperature-002").put("value", 18.5).put("unit", "degC");
+        value.putObject("payload").put("sensorId", "5556111b-70f6-4185-aa89-f66503bc7423").put("value", 18.5).put("unit", "degC");
         assertThat(validate(value)).isEmpty();
+    }
+
+    @Test void rejectsInvalidSensorUuidsAndSamplingValues() throws Exception {
+        var value = example();
+        ((ObjectNode) value.get("payload")).put("sensorId", "soil-001");
+        assertThat(validate(value)).isNotEmpty();
+        for (String field : java.util.List.of("rawMoisture", "rawMoistureMin", "rawMoistureMax")) {
+            value = example();
+            ((ObjectNode) value.get("payload")).put(field, -1L);
+            assertThat(validate(value)).isNotEmpty();
+            ((ObjectNode) value.get("payload")).put(field, 4_294_967_296L);
+            assertThat(validate(value)).isNotEmpty();
+        }
+        value = example();
+        ((ObjectNode) value.get("payload")).put("sampleCount", 0);
+        assertThat(validate(value)).isNotEmpty();
     }
 
     private ObjectNode example() throws Exception {

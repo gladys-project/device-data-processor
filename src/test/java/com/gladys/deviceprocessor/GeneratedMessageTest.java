@@ -23,14 +23,17 @@ class GeneratedMessageTest {
         assertThat(message.getObservedAt()).isEqualTo(1794164428500L);
         assertThat(message.getBatteryLevelPct()).isEqualTo(10);
         assertThat(message.getErrors().getFirst().getCode()).isEqualTo("LOW_BATTERY");
-        assertThat(message.getPayload().getSensorId()).isEqualTo("soil-001");
-        assertThat(message.getPayload().getAdditionalProperties().get("rawMoisture")).isEqualTo(2550);
+        assertThat(message.getPayload().getSensorId()).isEqualTo(java.util.UUID.fromString("e62e100e-4e97-42e0-8dd8-46519f0114c9"));
+        assertThat(message.getPayload().getRawMoisture()).isEqualTo(2550L);
+        assertThat(message.getPayload().getRawMoistureMin()).isEqualTo(2542L);
+        assertThat(message.getPayload().getRawMoistureMax()).isEqualTo(2560L);
+        assertThat(message.getPayload().getSampleCount()).isEqualTo(16);
         assertThat(json.readTree(json.writeValueAsString(message))).isEqualTo(original);
     }
     @Test void acceptsDifferentSensorMeasurementsOnTheSameDevice() throws Exception {
         var original = example();
         original.put("eventType", "SOIL_TEMPERATURE_READING");
-        original.putObject("payload").put("sensorId", "temperature-002").put("value", 18.5).put("unit", "degC");
+        original.putObject("payload").put("sensorId", "5556111b-70f6-4185-aa89-f66503bc7423").put("value", 18.5).put("unit", "degC");
         var message = json.treeToValue(original, KafkaRawTelemetry.class);
         assertThat(json.readTree(json.writeValueAsString(message))).isEqualTo(original);
     }
@@ -40,10 +43,11 @@ class GeneratedMessageTest {
             var validator = factory.getValidator();
             assertThat(validator.validate(message)).isEmpty();
             message.setBatteryLevelPct(101);
-            message.getPayload().setSensorId(" ");
+            message.getPayload().setSensorId(null);
+            message.getPayload().setSampleCount(0);
             message.getErrors().getFirst().setCode("");
             assertThat(validator.validate(message)).extracting(v -> v.getPropertyPath().toString())
-                .contains("batteryLevelPct", "payload.sensorId", "errors[0].code");
+                .contains("batteryLevelPct", "payload.sensorId", "payload.sampleCount", "errors[0].code");
         }
     }
     @Test void outboundModelAlsoEnforcesDefinitionConstraints() throws Exception {

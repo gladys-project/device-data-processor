@@ -159,3 +159,7 @@ SLF4J and shared dependencies remain Boot managed. Generator output targets Spri
 - [Maven Wrapper](https://maven.apache.org/tools/wrapper/), [Surefire](https://maven.apache.org/surefire/maven-surefire-plugin/), [Failsafe](https://maven.apache.org/surefire/maven-failsafe-plugin/).
 
 The output uses [Kafka binder producer configuration](https://docs.spring.io/spring-cloud-stream/reference/kafka/kafka-binder/config-options.html) and Spring Kafka's [serialization support](https://docs.spring.io/spring-kafka/reference/kafka/serdes.html).
+
+Sensor payload update: `sensorId` is a stable UUID. OpenAPI generates its Java property as `UUID`, and generates typed `Long` ADC values (`rawMoisture`, `rawMoistureMin`, `rawMoistureMax`) and positive `Integer sampleCount`. `rawMoisture` is the rounded sample mean. `calibrationId` remains an optional nonblank string. Moisture messages omit `unit`, ADC resolution and the previous fixed quality label; other sensor types can still use extension properties. Calibration settings belong to the sensor/calibration record. The bridge preserves all these fields; the device processor intentionally excludes the entire sensor payload from device-data output.
+
+Regenerate DTOs and MapStruct implementations with the normal Maven build after this contract change; do not edit generated files under `target/`. Examples and mapping/validation test sources were updated, but tests and builds were not run at the user's request. Legacy non-UUID sensor IDs must be replaced when updating firmware and consumers.

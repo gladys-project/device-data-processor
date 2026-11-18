@@ -50,7 +50,7 @@ class DeviceDataContractTest {
 
     @Test void rejectsSensorPayloadInDeviceDataOutput() throws Exception {
         var value = example();
-        value.putObject("payload").put("sensorId", "soil-001").put("rawMoisture", 2550);
+        value.putObject("payload").put("sensorId", "e62e100e-4e97-42e0-8dd8-46519f0114c9").put("rawMoisture", 2550);
         assertThat(validate(value)).isNotEmpty();
     }
 

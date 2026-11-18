@@ -57,7 +57,7 @@ class DeviceDataProcessorEventTest {
             }).expectComplete().verify(Duration.ofSeconds(3));
     }
     @ParameterizedTest
-    @ValueSource(strings = {"battery-under", "battery-over", "blank-sensor", "null-deviceId",
+    @ValueSource(strings = {"battery-under", "battery-over", "missing-sensor", "null-deviceId",
         "negative-sequence", "negative-uptimeMs", "negative-observedAt", "blank-eventType",
         "blank-clockSource", "error-code", "error-message", "missing-errors", "null-error-entry"})
     void constraintsFromGeneratedMessageRejectInvalidRecordsBeforeMapping(String kind) throws Exception {
@@ -66,7 +66,7 @@ class DeviceDataProcessorEventTest {
         switch (kind) {
             case "battery-under" -> { body.put("batteryLevelPct", -1); path = "batteryLevelPct"; }
             case "battery-over" -> { body.put("batteryLevelPct", 101); path = "batteryLevelPct"; }
-            case "blank-sensor" -> { ((ObjectNode) body.get("payload")).put("sensorId", " "); path = "payload.sensorId"; }
+            case "missing-sensor" -> { ((ObjectNode) body.get("payload")).remove("sensorId"); path = "payload.sensorId"; }
             case "null-deviceId" -> { body.putNull("deviceId"); path = "deviceId"; }
             case "negative-sequence" -> { body.put("sequence", -1); path = "sequence"; }
             case "negative-uptimeMs" -> { body.put("uptimeMs", -1); path = "uptimeMs"; }
