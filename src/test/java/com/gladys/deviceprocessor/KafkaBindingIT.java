@@ -133,7 +133,7 @@ class KafkaBindingIT {
     void anotherSensorTypeStillUsesSameDeviceKeyAndPreservesObservationMetadata() throws Exception {
         ObjectNode input = example();
         input.put("eventType", "SOIL_TEMPERATURE_READING");
-        input.putObject("payload").put("sensorId", "temperature-002").put("value", 18.5).put("unit", "degC");
+        input.putObject("payload").put("sensorId", "5556111b-70f6-4185-aa89-f66503bc7423").put("value", 18.5).put("unit", "degC");
         var record = publishAndReceive(input, OUTPUT);
         ObjectNode expected = input.deepCopy();
         expected.remove("payload");
