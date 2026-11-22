@@ -36,7 +36,7 @@ class RawTelemetryContractTest {
 
     @ParameterizedTest
     @ValueSource(strings = {"schemaVersion", "eventId", "eventType", "deviceId", "bootId", "sequence",
-        "uptimeMs", "observedAt", "clockSource", "mock", "batteryLevelPct", "errors", "payload"})
+        "uptimeMs", "observedAt", "clockSource", "mock", "errors", "payload"})
     void requiresEachEnvelopeField(String field) throws Exception {
         var value = example();
         value.remove(field);

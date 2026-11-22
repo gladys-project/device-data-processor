@@ -63,6 +63,19 @@ class RawTelemetryToDeviceDataMapperTest {
         assertThat(actual.getBatteryLevelPct()).isEqualTo(80);
     }
 
+    @Test void projectsSupplyVoltageWithoutAddingAnUnknownBatteryPercentage() throws Exception {
+        var source = input();
+        source.getErrors().clear();
+        source.setBatteryLevelPct(null);
+        source.setSupplyVoltageMv(4750);
+
+        var output = json.readTree(json.writeValueAsString(mapper.toDeviceData(source)));
+
+        assertThat(output.get("supplyVoltageMv").asInt()).isEqualTo(4750);
+        assertThat(output.has("batteryLevelPct")).isFalse();
+        assertThat(output.get("errors").size()).isZero();
+    }
+
     @Test void projectsDifferentSensorsWithoutInterpretingTheirMeasurements() throws Exception {
         var source = input();
         source.setEventType("SOIL_TEMPERATURE_READING");

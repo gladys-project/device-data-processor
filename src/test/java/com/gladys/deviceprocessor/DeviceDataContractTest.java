@@ -41,7 +41,7 @@ class DeviceDataContractTest {
 
     @ParameterizedTest
     @ValueSource(strings = {"schemaVersion", "eventId", "eventType", "deviceId", "bootId", "sequence",
-        "uptimeMs", "observedAt", "clockSource", "mock", "batteryLevelPct", "errors"})
+        "uptimeMs", "observedAt", "clockSource", "mock", "errors"})
     void requiresDeviceDiagnosticsAndCorrelationFields(String field) throws Exception {
         var value = example();
         value.remove(field);
