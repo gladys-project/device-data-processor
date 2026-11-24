@@ -22,7 +22,7 @@ class GeneratedMessageTest {
         assertThat(message.getDeviceId()).isEqualTo(UUID.fromString("550e8400-e29b-41d4-a716-446655440000"));
         assertThat(message.getObservedAt()).isEqualTo(1794164428500L);
         assertThat(message.getBatteryLevelPct()).isEqualTo(10);
-        assertThat(message.getErrors().getFirst().getCode()).isEqualTo("LOW_BATTERY");
+        assertThat(message.getErrors().getFirst().getCode()).isEqualTo("BAT_01");
         assertThat(message.getPayload().getSensorId()).isEqualTo(java.util.UUID.fromString("e62e100e-4e97-42e0-8dd8-46519f0114c9"));
         assertThat(message.getPayload().getRawMoisture()).isEqualTo(2550L);
         assertThat(message.getPayload().getRawMoistureMin()).isEqualTo(2542L);
