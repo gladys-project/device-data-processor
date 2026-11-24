@@ -37,7 +37,7 @@ class RawTelemetryToDeviceDataMapperTest {
         assertThat(actual.getBootId()).isEqualTo(source.getBootId());
         assertThat(actual.getSequence()).isEqualTo(source.getSequence());
         assertThat(actual.getBatteryLevelPct()).isEqualTo(10);
-        assertThat(actual.getErrors().getFirst().getCode()).isEqualTo("LOW_BATTERY");
+        assertThat(actual.getErrors().getFirst().getCode()).isEqualTo("BAT_01");
         assertThat(source.getPayload().getSensorId()).isEqualTo(java.util.UUID.fromString("e62e100e-4e97-42e0-8dd8-46519f0114c9"));
     }
 
@@ -46,20 +46,18 @@ class RawTelemetryToDeviceDataMapperTest {
         var actual = mapper.toDeviceData(source);
         assertThat(actual.getErrors()).isNotSameAs(source.getErrors());
         assertThat(actual.getErrors().getFirst()).isNotSameAs(source.getErrors().getFirst());
-        actual.getErrors().getFirst().setCode("CHANGED");
+        actual.getErrors().getFirst().setCode("SEN_02");
         actual.getErrors().clear();
         assertThat(source.getErrors()).hasSize(1);
-        assertThat(source.getErrors().getFirst().getCode()).isEqualTo("LOW_BATTERY");
+        assertThat(source.getErrors().getFirst().getCode()).isEqualTo("BAT_01");
     }
 
-    @Test void preservesEmptyDiagnosticsAndRealDeviceFlag() throws Exception {
+    @Test void preservesEmptyDiagnosticsAndBatteryLevel() throws Exception {
         var source = input();
         source.getErrors().clear();
-        source.setMock(false);
         source.setBatteryLevelPct(80);
         var actual = mapper.toDeviceData(source);
         assertThat(actual.getErrors()).isEmpty();
-        assertThat(actual.getMock()).isFalse();
         assertThat(actual.getBatteryLevelPct()).isEqualTo(80);
     }
 
@@ -90,5 +88,26 @@ class RawTelemetryToDeviceDataMapperTest {
 
     @Test void nullSourceMapsToNull() {
         assertThat(mapper.toDeviceData(null)).isNull();
+    }
+
+    @Test
+    void preservesDistinctCriticalConditionsAcrossSuccessiveSnapshots() throws Exception {
+        var observation = (ObjectNode) json.readTree(json.writeValueAsString(input()));
+        var errors = observation.putArray("errors");
+        errors.addObject().put("code", "SEN_01").put("component", "SOIL_SENSOR_A")
+                .put("severity", "CRITICAL").put("message", "Sensor read failed.");
+        errors.addObject().put("code", "PMP_01").put("component", "PUMP_A")
+                .put("severity", "CRITICAL").put("message", "Pump activation failed.");
+
+        var first = mapper.toDeviceData(json.treeToValue(observation, KafkaRawTelemetry.class));
+        assertThat(json.readTree(json.writeValueAsString(first)).get("errors")).isEqualTo(errors);
+
+        errors.remove(0);
+        var next = mapper.toDeviceData(json.treeToValue(observation, KafkaRawTelemetry.class));
+        var nextErrors = json.readTree(json.writeValueAsString(next)).get("errors");
+        assertThat(nextErrors).isEqualTo(errors);
+        assertThat(nextErrors.size()).isEqualTo(1);
+        assertThat(nextErrors.get(0).get("code").asString()).isEqualTo("PMP_01");
+        assertThat(nextErrors.get(0).get("severity").asString()).isEqualTo("CRITICAL");
     }
 }
