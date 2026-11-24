@@ -47,7 +47,7 @@ OpenAPI `required`, numeric ranges, string patterns and nested schemas generate 
 
 ## Outbound message and MapStruct mapping
 
-[kafka-device-data.yml](src/main/resources/openapi/kafka-device-data.yml) separately defines the generated `KafkaDeviceData` output. Its `DeviceError` schema references the inbound document so diagnostics share one definition. [The outbound example](src/main/resources/openapi/examples/kafka-device-data.json) preserves `schemaVersion`, `eventId`, original `eventType`, `deviceId`, `bootId`, `sequence`, `uptimeMs`, `observedAt`, `clockSource`, `mock`, `batteryLevelPct` and `errors`. It omits the sensor measurement `payload`; the raw input and its contract remain intact for the separate Telemetry Processor. No event type, timestamp, error or watering decision is inferred.
+[kafka-device-data.yml](src/main/resources/openapi/kafka-device-data.yml) separately defines the generated `KafkaDeviceData` output. Its `DeviceError` schema references the inbound document so diagnostics share one definition. [The outbound example](src/main/resources/openapi/examples/kafka-device-data.json) preserves `schemaVersion`, `eventId`, original `eventType`, `deviceId`, `bootId`, `sequence`, `uptimeMs`, `observedAt`, `clockSource`, `batteryLevelPct` and `errors`. It omits the sensor measurement `payload`; the raw input and its contract remain intact for the separate Telemetry Processor. No event type, timestamp, error or watering decision is inferred.
 
 [RawTelemetryToDeviceDataMapper](src/main/java/com/gladys/deviceprocessor/mapping/RawTelemetryToDeviceDataMapper.java) is a Spring MapStruct mapper:
 

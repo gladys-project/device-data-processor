@@ -52,14 +52,12 @@ class RawTelemetryToDeviceDataMapperTest {
         assertThat(source.getErrors().getFirst().getCode()).isEqualTo("BAT_01");
     }
 
-    @Test void preservesEmptyDiagnosticsAndRealDeviceFlag() throws Exception {
+    @Test void preservesEmptyDiagnosticsAndBatteryLevel() throws Exception {
         var source = input();
         source.getErrors().clear();
-        source.setMock(false);
         source.setBatteryLevelPct(80);
         var actual = mapper.toDeviceData(source);
         assertThat(actual.getErrors()).isEmpty();
-        assertThat(actual.getMock()).isFalse();
         assertThat(actual.getBatteryLevelPct()).isEqualTo(80);
     }
 
